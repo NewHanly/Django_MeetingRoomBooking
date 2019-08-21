@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <title>会议室预定系统</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/css/htmleaf-demo.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/normalize.css">
+    <style type="text/css">
+        h1 {
+            font-size: 30px;
+        }
+
+        .ripple-container .ripple {
+            background-color: rgba(255, 255, 255, 0.4);
+            animation: ripple 2s forwards cubic-bezier(0, 0, 0.2, 1);
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+
+            80% {
+                transform: scale(1);
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        button {
+            background-color: dodgerblue;
+            color: white;
+            padding: 10px 20px;
+            border: 0;
+            font-size: 14px;
+            cursor: pointer
+        }
+
+        .form-control[readonly] {
+            background: none;
+        }
+
+        @media(max-width: 414px) {
+            .form-control {
+                font-size: 12px;
+            }
+        }
+
+        @media(max-width: 360px) {
+            .form-control {
+                font-size: 10px;
+                padding: 0 5px;
+            }
+        }
+
+        @media(max-width: 160px) {
+            .col-xs-6 {
+                padding: 0 5px;
+            }
+        }
+    </style>
+    <style type="text/css">
+        ul {
+            margin: 0;
+            padding: 0
+        }
+
+        li {
+            list-style-type: none
+        }
+
+        .rolldate-container {
+            font-size: 20px;
+            color: #333;
+            text-align: center
+        }
+
+        .rolldate-container header {
+            position: relative;
+            line-height: 60px;
+            font-size: 18px;
+            border-bottom: 1px solid #e0e0e0
+        }
+
+        .rolldate-container .rolldate-mask {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: #000;
+            opacity: .4;
+            z-index: 999
+        }
+
+        .rolldate-container .rolldate-panel {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 273px;
+            z-index: 1000;
+            background: #fff;
+            -webkit-animation-duration: .3s;
+            animation-duration: .3s;
+            -webkit-animation-delay: 0s;
+            animation-delay: 0s;
+            -webkit-animation-iteration-count: 1;
+            animation-iteration-count: 1
+        }
+
+        .rolldate-container .rolldate-btn {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            padding: 0 15px;
+            color: #666;
+            font-size: 16px;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent
+        }
+
+        .rolldate-container.wx .rolldate-btn {
+            height: 150%
+        }
+
+        .rolldate-container .rolldate-confirm {
+            left: auto;
+            right: 0;
+            color: #007bff
+        }
+
+        .rolldate-container .rolldate-content {
+            position: relative;
+            top: 20px
+        }
+
+        .rolldate-container .rolldate-wrapper {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex
+        }
+
+        .rolldate-container .rolldate-wrapper>div {
+            -webkit-box-flex: 1;
+            -webkit-flex: 1;
+            -ms-flex: 1;
+            flex: 1;
+            height: 173px;
+            line-height: 36px;
+            overflow: hidden;
+            -webkit-flex-basis: -8e;
+            -ms-flex-preferred-size: -8e;
+            flex-basis: -8e;
+            width: 1%
+        }
+
+        .rolldate-container .rolldate-wrapper ul {
+            margin-top: 68px
+        }
+
+        .rolldate-container .rolldate-wrapper li {
+            height: 36px
+        }
+
+        .rolldate-container .rolldate-dim {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 68px;
+            background: -webkit-gradient(linear, left bottom, left top, from(hsla(0, 0%, 100%, .4)), to(hsla(0, 0%, 100%, .8)));
+            background: -webkit-linear-gradient(bottom, hsla(0, 0%, 100%, .4), hsla(0, 0%, 100%, .8));
+            background: -o-linear-gradient(bottom, hsla(0, 0%, 100%, .4), hsla(0, 0%, 100%, .8));
+            background: -webkit-gradient(linear, left bottom, left top, from(hsla(0, 0%, 100%, 0.4)), to(hsla(0, 0%, 100%, 0.8)));
+            background: -webkit-linear-gradient(bottom, hsla(0, 0%, 100%, 0.4), hsla(0, 0%, 100%, 0.8));
+            background: -o-linear-gradient(bottom, hsla(0, 0%, 100%, 0.4), hsla(0, 0%, 100%, 0.8));
+            background: linear-gradient(0deg, hsla(0, 0%, 100%, .4), hsla(0, 0%, 100%, .8));
+            pointer-events: none;
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+            z-index: 10
+        }
+
+        .rolldate-container .mask-top {
+            border-bottom: 1px solid #ebebeb
+        }
+
+        .rolldate-container .mask-bottom {
+            top: auto;
+            bottom: 1px;
+            border-top: 1px solid #ebebeb
+        }
+
+        .rolldate-container .fadeIn {
+            -webkit-animation-name: fadeIn;
+            animation-name: fadeIn
+        }
+
+        .rolldate-container .fadeOut {
+            -webkit-animation-name: fadeOut;
+            animation-name: fadeOut
+        }
+
+        @-webkit-keyframes fadeIn {
+            0% {
+                bottom: -273px
+            }
+
+            to {
+                bottom: 0
+            }
+        }
+
+        @keyframes fadeIn {
+            0% {
+                bottom: -273px
+            }
+
+            to {
+                bottom: 0
+            }
+        }
+
+        @-webkit-keyframes fadeOut {
+            0% {
+                bottom: 0
+            }
+
+            to {
+                bottom: -273px;
+                display: none
+            }
+        }
+
+        @keyframes fadeOut {
+            0% {
+                bottom: 0
+            }
+
+            to {
+                bottom: -273px;
+                display: none
+            }
+        }
+
+        @media screen and (max-width:414px) {
+            .rolldate-container {
+                font-size: 18px
+            }
+        }
+
+        @media screen and (max-width:320px) {
+            .rolldate-container {
+                font-size: 15px
+            }
+        }
+    </style>
+</head>
+
+<body style="background-color: white">
+    <div class="htmleaf-container">
+        <header class="htmleaf-header" style="padding: 1em 190px 2em;background:#212121">
+            <h1>添加会议室</h1>
+        </header>
+        <div class="container" style="margin-top: 20px">
+            <h4 style="margin-left: 10px;"><strong style="margin-left: 20%;color: black">会议室名称</strong></h4>
+            <div class="row">
+                <div class="form-group clearfix" style="margin-left: 20%;width:60%">
+                    <div class="col-xs-6" style="width:100%">
+                        <input class="form-control" type="text" id="room_name">
+                    </div>
+                </div>
+            </div>
+
+            <h4 style="padding-left: 10px;"><strong style="margin-left: 20%;color: black">会议室描述</strong></h4>
+            <div class="row">
+                <div class="form-group clearfix" style="margin-left: 20%;width:60%">
+                    <div class="col-xs-6" style="width:100%">
+                        <input class="form-control" type="text" id="room_info">
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="center" style="position: fixed;margin: 0 auto;left: 0;right: 0;bottom: 40px;max-width: 512px">
+                <button data-ripple="" style="margin-top: 10px;width:40%" onclick="submitData()">
+                    提交
+                </button>
+            </div>
+
+        </div>
+
+
+    </div>
+    <script type="text/javascript">
+        function submitData() {
+            var data = {
+                "room_name": document.getElementById("room_name").value,
+                "room_info": document.getElementById("room_info").value,
+            }
+            if (data.room_name == '' || data.room_info == '') {
+                alert('请将表单填写完整')
+            }
+            else {
+                var form = new XMLHttpRequest()
+                form.open("POST", "/callback/?num=-1", true)
+                form.setRequestHeader("Content-type", "application/json")
+                form.send(JSON.stringify(data))
+                form.onreadystatechange = function () {
+                    if (form.readyState == 4) {
+                        alert('提交成功')
+                        location.href = "/?code=yes"
+                    }
+                }
+            }
+        }
+    </script>
+    <script type="text/javascript" src="/static/js/rolldate.js"></script>
+    <script src="/static/js/ripple.js"></script>
+    <script type="text/javascript">
+        // just add effect to elements
+        Array.prototype.forEach.call(document.querySelectorAll('[data-ripple]'), function (element) {
+            // find all elements and attach effect
+            new RippleEffect(element); // element is instance of javascript element node
+        });
+    </script>
+</body>
+
+</html>

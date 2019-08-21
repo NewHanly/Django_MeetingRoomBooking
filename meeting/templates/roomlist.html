@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block mainbody %}
+{% for item in item_list %}
+<figure class="snip0056" onclick="location = '/{{item.no}}{{code}}'" style="border: solid 2px #000;
+border-radius: 15px 15px 15px 15px;min-height: 140px">
+  <div style="position: absolute;z-index: 2;padding-left: 2px;padding-top: 2px" onclick="delR('{{item.no}}')">
+    <img src="/static/img/11.png" style="height: 20px;">
+  </div>
+  <figcaption>
+    <h2><span>{{item.name}}</span></h2>
+    <p>{{item.info}}</p>
+  </figcaption>
+  <img src="/static/img/12.png">
+</figure>
+{% endfor %}
+<div class="center" style="position: fixed;margin: 0 auto;left: 0;right: 0;bottom: 40px;max-width: 512px;z-index: 9999">
+  <button data-ripple="" style="margin-top: 10px;width:40%" onclick="location = '/addroom{{code}}'">
+    添加会议室
+  </button>
+</div>
+<script type="text/javascript">{ { script } } ('{{wrong}}')</script>
+<script type="text/javascript">
+  function delR(rmno) {
+    if (confirm('确定要删除吗')) {
+      var data = {
+        "type": 'room',
+        "rmno": rmno,
+      }
+      var cmd = new XMLHttpRequest
+      cmd.open("POST", "/delcallback{{code}}", true)
+      cmd.setRequestHeader("Content-type", "application/json")
+      cmd.send(JSON.stringify(data))
+      cmd.onreadystatechange = function () {
+        if (cmd.readyState == 4 && cmd.status == 200) {
+          alert(cmd.responseText)
+          location.href = "/?code=yes"
+        }
+      }
+    }
+    window.event.stopPropagation()
+  }
+</script>
+{% endblock %}

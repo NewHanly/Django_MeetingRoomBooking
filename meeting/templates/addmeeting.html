@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <title>会议室预定系统</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/css/htmleaf-demo.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/normalize.css">
+    <style type="text/css">
+        h1 {
+            font-size: 30px;
+        }
+
+        .ripple-container .ripple {
+            background-color: rgba(255, 255, 255, 0.4);
+            animation: ripple 2s forwards cubic-bezier(0, 0, 0.2, 1);
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+
+            80% {
+                transform: scale(1);
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        button {
+            background-color: dodgerblue;
+            color: white;
+            padding: 10px 20px;
+            border: 0;
+            font-size: 14px;
+            cursor: pointer
+        }
+
+        .form-control[readonly] {
+            background: none;
+        }
+
+        @media(max-width: 414px) {
+            .form-control {
+                font-size: 12px;
+            }
+        }
+
+        @media(max-width: 360px) {
+            .form-control {
+                font-size: 10px;
+                padding: 0 5px;
+            }
+        }
+
+        @media(max-width: 160px) {
+            .col-xs-6 {
+                padding: 0 5px;
+            }
+        }
+    </style>
+    <style type="text/css">
+        ul {
+            margin: 0;
+            padding: 0
+        }
+
+        li {
+            list-style-type: none
+        }
+
+        .rolldate-container {
+            font-size: 20px;
+            color: #333;
+            text-align: center
+        }
+
+        .rolldate-container header {
+            position: relative;
+            line-height: 60px;
+            font-size: 18px;
+            border-bottom: 1px solid #e0e0e0
+        }
+
+        .rolldate-container .rolldate-mask {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: #000;
+            opacity: .4;
+            z-index: 999
+        }
+
+        .rolldate-container .rolldate-panel {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 273px;
+            z-index: 1000;
+            background: #fff;
+            -webkit-animation-duration: .3s;
+            animation-duration: .3s;
+            -webkit-animation-delay: 0s;
+            animation-delay: 0s;
+            -webkit-animation-iteration-count: 1;
+            animation-iteration-count: 1
+        }
+
+        .rolldate-container .rolldate-btn {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            padding: 0 15px;
+            color: #666;
+            font-size: 16px;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent
+        }
+
+        .rolldate-container.wx .rolldate-btn {
+            height: 150%
+        }
+
+        .rolldate-container .rolldate-confirm {
+            left: auto;
+            right: 0;
+            color: #007bff
+        }
+
+        .rolldate-container .rolldate-content {
+            position: relative;
+            top: 20px
+        }
+
+        .rolldate-container .rolldate-wrapper {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex
+        }
+
+        .rolldate-container .rolldate-wrapper>div {
+            -webkit-box-flex: 1;
+            -webkit-flex: 1;
+            -ms-flex: 1;
+            flex: 1;
+            height: 173px;
+            line-height: 36px;
+            overflow: hidden;
+            -webkit-flex-basis: -8e;
+            -ms-flex-preferred-size: -8e;
+            flex-basis: -8e;
+            width: 1%
+        }
+
+        .rolldate-container .rolldate-wrapper ul {
+            margin-top: 68px
+        }
+
+        .rolldate-container .rolldate-wrapper li {
+            height: 36px
+        }
+
+        .rolldate-container .rolldate-dim {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 68px;
+            background: -webkit-gradient(linear, left bottom, left top, from(hsla(0, 0%, 100%, .4)), to(hsla(0, 0%, 100%, .8)));
+            background: -webkit-linear-gradient(bottom, hsla(0, 0%, 100%, .4), hsla(0, 0%, 100%, .8));
+            background: -o-linear-gradient(bottom, hsla(0, 0%, 100%, .4), hsla(0, 0%, 100%, .8));
+            background: -webkit-gradient(linear, left bottom, left top, from(hsla(0, 0%, 100%, 0.4)), to(hsla(0, 0%, 100%, 0.8)));
+            background: -webkit-linear-gradient(bottom, hsla(0, 0%, 100%, 0.4), hsla(0, 0%, 100%, 0.8));
+            background: -o-linear-gradient(bottom, hsla(0, 0%, 100%, 0.4), hsla(0, 0%, 100%, 0.8));
+            background: linear-gradient(0deg, hsla(0, 0%, 100%, .4), hsla(0, 0%, 100%, .8));
+            pointer-events: none;
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+            z-index: 10
+        }
+
+        .rolldate-container .mask-top {
+            border-bottom: 1px solid #ebebeb
+        }
+
+        .rolldate-container .mask-bottom {
+            top: auto;
+            bottom: 1px;
+            border-top: 1px solid #ebebeb
+        }
+
+        .rolldate-container .fadeIn {
+            -webkit-animation-name: fadeIn;
+            animation-name: fadeIn
+        }
+
+        .rolldate-container .fadeOut {
+            -webkit-animation-name: fadeOut;
+            animation-name: fadeOut
+        }
+
+        @-webkit-keyframes fadeIn {
+            0% {
+                bottom: -273px
+            }
+
+            to {
+                bottom: 0
+            }
+        }
+
+        @keyframes fadeIn {
+            0% {
+                bottom: -273px
+            }
+
+            to {
+                bottom: 0
+            }
+        }
+
+        @-webkit-keyframes fadeOut {
+            0% {
+                bottom: 0
+            }
+
+            to {
+                bottom: -273px;
+                display: none
+            }
+        }
+
+        @keyframes fadeOut {
+            0% {
+                bottom: 0
+            }
+
+            to {
+                bottom: -273px;
+                display: none
+            }
+        }
+
+        @media screen and (max-width:414px) {
+            .rolldate-container {
+                font-size: 18px
+            }
+        }
+
+        @media screen and (max-width:320px) {
+            .rolldate-container {
+                font-size: 15px
+            }
+        }
+    </style>
+</head>
+
+<body style="background-color: white; overflow-x:hidden">
+    <div class="htmleaf-container">
+        <header class="htmleaf-header" style="padding: 1em 190px 2em;background:#212121">
+            <h1 style="min-width: 100px">新建会议</h1>
+        </header>
+        <div class="container" style="margin-top: 20px">
+            <h4 style="margin-left: 10px;"><strong style="margin-left: 20%;color: black">选择日期</strong></h4>
+            <div class="row">
+                <div class="form-group clearfix" style="margin-left: 20%;width:60%">
+                    <div class="col-xs-6" style="width:100%">
+                        <input readonly="readonly" class="form-control" type="text" id="date" value="2019-07-31">
+                    </div>
+                </div>
+            </div>
+
+            <h4 style="margin-left: 10px;"><strong style="margin-left: 20%;color: black">选择时间</strong></h4>
+            <div class="row">
+                <div class="form-group clearfix" style="margin-left: 20%;width:60%">
+                    <div class="col-xs-6" style="width: 49%">
+                        <input readonly="readonly" class="form-control" type="text" id="time_from" value="06:00">
+                    </div>
+                    <div class="col-xs-6"
+                        style="width: 2%;padding-right: 0px;margin-top: 4px;right: 0px;padding-left: 0px;">
+                        <p style="color: black">
+                            至
+                        </p>
+                    </div>
+                    <div class="col-xs-6" style="width: 49%">
+                        <input readonly="readonly" class="form-control" type="text" id="time_to" value="17:00">
+                    </div>
+                </div>
+            </div>
+
+            <h4 style="padding-left: 10px;"><strong style="margin-left: 20%;color: black">会议主题</strong></h4>
+            <div class="row">
+                <div class="form-group clearfix" style="margin-left: 20%;width:60%">
+                    <div class="col-xs-6" style="width:100%">
+                        <input class="form-control" type="text" id="meeting_name">
+                    </div>
+                </div>
+            </div>
+            <div class="center" style="position: fixed;margin: 0 auto;left: 0;right: 0;bottom: 40px;max-width: 512px">
+                <button data-ripple="" style="margin-top: 10px;width:40%" onclick="submitData()">
+                    提交
+                </button>
+            </div>
+
+        </div>
+
+
+    </div>
+
+    <script type="text/javascript">
+        function submitData() {
+            var data = {
+                "host": '{{username}}',
+                "hostid": '{{hostid}}',
+                "mtdate": document.getElementById("date").value,
+                "mtst": document.getElementById("time_from").value,
+                "mtet": document.getElementById("time_to").value,
+                "mttitle": document.getElementById("meeting_name").value
+            }
+            if (data.host == '') {
+                alert('登录失效,请重新登录')
+            }
+            else if (data.mtname == '') {
+                alert('请将表单填写完整')
+            }
+            else {
+                var form = new XMLHttpRequest()
+                form.open("POST", "/callback/?num={{num}}", true)
+                form.setRequestHeader("Content-type", "application/json")
+                form.send(JSON.stringify(data))
+                form.onreadystatechange = function () {
+                    if (form.readyState == 4 && form.status == 200) {
+                        alert(form.responseText)
+                        location.href = "/?code=yes"
+                    }
+                }
+            }
+        }
+    </script>
+
+
+    <script>
+        window.onload = function () {
+
+			/* 回调函数
+			 * tips:	在vue及其他mvvm框架中使用时，在confirm中修改v-model绑定的数据即可
+			 */
+            new Rolldate({
+                el: '#date-group2-1',
+                format: 'YYYY-MM-DD',
+                beginYear: 2000,
+                endYear: 2100,
+                init: function () {
+                    console.log('插件开始触发');
+                },
+                moveEnd: function (scroll) {
+                    console.log(scroll)
+                    console.log('滚动结束');
+                },
+                confirm: function (date) {
+                    console.log(date)
+                    console.log('确定按钮触发');
+                },
+                cancel: function () {
+                    console.log('插件运行取消');
+                }
+            })
+            new Rolldate({
+                el: '#date-group2-2',
+                format: 'YYYY-MM-DD',
+                beginYear: 2000,
+                endYear: 2100,
+                init: function () {
+                    if (1 == 1) {
+                        console.log('阻止插件继续执行');
+                        return false;
+                    }
+                }
+            })
+            new Rolldate({
+                el: '#date-group2-3',
+                format: 'YYYY-MM-DD',
+                beginYear: 2000,
+                endYear: 2100,
+                confirm: function (date) {
+                    return date.replace(/-/g, '/');
+                }
+            })
+            // 自定义语言
+            var lang = {
+                title: '自定义标题',
+                cancel: '取消',
+                confirm: '确认',
+                year: '年',
+                month: '月',
+                day: '日',
+                hour: '时',
+                min: '分',
+                sec: '秒'
+            };
+            // 如果某个值未修改可不传 以上同 var lang = {title:'自定义标题'} 允许传空串
+            new Rolldate({
+                el: '#date-group3-1',
+                format: 'YYYY-MM-DD',
+                beginYear: 2000,
+                endYear: 2100,
+                lang: lang
+            })
+
+            // 设置默认日期 内部使用document.getElementById('date').bindDate = new Date('2019/05/13');
+            new Rolldate({
+                el: '#date-group4-1',
+                format: 'YYYY-MM-DD',
+                beginYear: 2000,
+                endYear: 2100,
+                value: '2017-10-21' //或2017-10-21 23:52:50
+            })
+
+            // el传dom对象，只支持单个
+            new Rolldate({
+                el: document.getElementById('date-group5-1'),
+                format: 'YYYY-MM-DD',
+                beginYear: 2000,
+                endYear: 2100
+            })
+
+            new Rolldate({
+                el: '#time_from',
+                format: 'hh:mm',
+                minStep: 5,
+                lang: { title: '开始时间' }
+            })
+
+            new Rolldate({
+                el: '#time_to',
+                format: 'hh:mm',
+                minStep: 5,
+                lang: { title: '结束时间' }
+            })
+
+            // 使用原生click
+            new Rolldate({
+                el: '#date-group7-1',
+                trigger: 'click'
+            })
+
+            //日期判断
+            new Rolldate({
+                el: '#date',
+                format: 'YYYY-MM-DD',
+                beginYear: 2000,
+                endYear: 2100,
+                confirm: function (date) {
+                    var d = new Date(),
+                        d1 = new Date(date.replace(/\-/g, "\/")),
+                        d2 = new Date(d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDate()); //如果非'YYYY-MM-DD'格式，需要另做调整
+
+                    if (d1 < d2) {
+                        alert('不能小于当前的日期');
+                        return false;
+                    }
+                }
+            })
+        }
+    </script>
+    <script type="text/javascript" src="/static/js/rolldate.js"></script>
+    <script src="/static/js/ripple.js"></script>
+    <script type="text/javascript">
+        // just add effect to elements
+        Array.prototype.forEach.call(document.querySelectorAll('[data-ripple]'), function (element) {
+            // find all elements and attach effect
+            new RippleEffect(element); // element is instance of javascript element node
+        });
+    </script>
+</body>
+
+</html>
